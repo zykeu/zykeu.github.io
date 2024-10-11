@@ -18,6 +18,12 @@
             color: blue;
             text-decoration: underline;
         }
+        .delete-button {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +39,16 @@
     <script>
         let groupNumber = 1;
 
+        // Load groups from Local Storage on page load
+        window.onload = function() {
+            const savedGroups = JSON.parse(localStorage.getItem('groups')) || [];
+            if (savedGroups.length > 0) {
+                savedGroups.forEach((group, index) => {
+                    addGroupToPage(group.name1, group.substitute1, group.name2, group.substitute2, index);
+                });
+            }
+        }
+
         // Function to toggle between name and substitute
         function toggleName(element) {
             const originalName = element.getAttribute('data-name');
@@ -47,7 +63,7 @@
             }
         }
 
-        // Function to add a new group
+        // Function to add a new group and save it
         function addGroup() {
             // Prompt for names and substitutes
             const name1 = prompt("Enter name 1:");
@@ -55,16 +71,24 @@
             const name2 = prompt("Enter name 2:");
             const substitute2 = prompt("Enter substitute for name 2:");
 
-            // Create a new group element
+            // Add group to the page and save it
+            const savedGroups = saveGroupToLocalStorage(name1, substitute1, name2, substitute2);
+            addGroupToPage(name1, substitute1, name2, substitute2, savedGroups.length - 1);
+        }
+
+        // Function to add a group to the page
+        function addGroupToPage(name1, substitute1, name2, substitute2, index) {
             const groupContainer = document.getElementById('groupContainer');
             const groupDiv = document.createElement('div');
             groupDiv.classList.add('group');
+            groupDiv.setAttribute('data-index', index);  // Store the index for later use in deletion
 
             // Create and add the group content with toggle functionality
             groupDiv.innerHTML = `
                 Group ${groupNumber}: 
                 <span class="name" onclick="toggleName(this)" data-name="${name1}" data-substitute="${substitute1}">${name1}</span>, 
                 <span class="name" onclick="toggleName(this)" data-name="${name2}" data-substitute="${substitute2}">${name2}</span>
+                <span class="delete-button" onclick="deleteGroup(${index}, this)">[Delete]</span>
             `;
 
             // Append the group to the container
@@ -72,6 +96,32 @@
 
             // Increment group number for the next group
             groupNumber++;
+        }
+
+        // Function to save a group to Local Storage
+        function saveGroupToLocalStorage(name1, substitute1, name2, substitute2) {
+            const savedGroups = JSON.parse(localStorage.getItem('groups')) || [];
+            savedGroups.push({ name1, substitute1, name2, substitute2 });
+            localStorage.setItem('groups', JSON.stringify(savedGroups));
+            return savedGroups; // Return updated list of groups
+        }
+
+        // Function to delete a group
+        function deleteGroup(index, element) {
+            // Confirm deletion
+            if (!confirm('Are you sure you want to delete this group?')) return;
+
+            // Remove the group from the page
+            const groupContainer = document.getElementById('groupContainer');
+            groupContainer.removeChild(element.parentElement);
+
+            // Remove the group from Local Storage
+            const savedGroups = JSON.parse(localStorage.getItem('groups')) || [];
+            savedGroups.splice(index, 1);  // Remove the group at the given index
+            localStorage.setItem('groups', JSON.stringify(savedGroups));
+
+            // Reload the page to update group numbering and indexes
+            location.reload();
         }
     </script>
 
