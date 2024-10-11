@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Pairing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .group {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .name {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Group Pairing</h1>
+
+    <!-- Container where groups will be displayed -->
+    <div id="groupContainer"></div>
+
+    <!-- Button to add a new group -->
+    <button onclick="addGroup()">Add Group</button>
+
+    <script>
+        let groupNumber = 1;
+
+        // Function to toggle between name and substitute
+        function toggleName(element) {
+            const originalName = element.getAttribute('data-name');
+            const substituteName = element.getAttribute('data-substitute');
+            const currentName = element.innerText;
+
+            // Toggle between the original name and the substitute name
+            if (currentName === originalName) {
+                element.innerText = substituteName;
+            } else {
+                element.innerText = originalName;
+            }
+        }
+
+        // Function to add a new group
+        function addGroup() {
+            // Prompt for names and substitutes
+            const name1 = prompt("Enter name 1:");
+            const substitute1 = prompt("Enter substitute for name 1:");
+            const name2 = prompt("Enter name 2:");
+            const substitute2 = prompt("Enter substitute for name 2:");
+
+            // Create a new group element
+            const groupContainer = document.getElementById('groupContainer');
+            const groupDiv = document.createElement('div');
+            groupDiv.classList.add('group');
+
+            // Create and add the group content with toggle functionality
+            groupDiv.innerHTML = `
+                Group ${groupNumber}: 
+                <span class="name" onclick="toggleName(this)" data-name="${name1}" data-substitute="${substitute1}">${name1}</span>, 
+                <span class="name" onclick="toggleName(this)" data-name="${name2}" data-substitute="${substitute2}">${name2}</span>
+            `;
+
+            // Append the group to the container
+            groupContainer.appendChild(groupDiv);
+
+            // Increment group number for the next group
+            groupNumber++;
+        }
+    </script>
+
+</body>
+</html>
